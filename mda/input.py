@@ -16,6 +16,17 @@ vmd_traj = ['binpos', 'crd', 'crdbox', 'nc', 'dcd',
             'h5', 'lammpstrj', 'nc', 'xml', 'OUTCAR',
             'XCATCAR', 'vtf', 'axsf', 'xsf', 'xyz']
 
+# VMD analysis
+# http://www-s.ks.uiuc.edu/Research/vmd/vmd-1.9.1/ug/node136.html
+
+vmd_measure = ['avpos', 'center', 'cluster', 'contacts',
+               'dipole', 'fit', 'gofr', 'hbonds', 
+               'inverse', 'minmax', 'rgyr', 'rmsd',
+               'rmsf', 'sasa', 'sumweights', 'bond',
+               'angle', 'dihed', 'imprp', 'energy',
+               'surface', 'pbc2onc', 'pbcneighbors',
+               'inertia', 'symmetry']
+
 class Parser:
 
     def __init__(self, infile):
