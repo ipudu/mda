@@ -83,6 +83,25 @@ class Measure:
 
     def gofr(self, outfile, sel1, sel2, delta=0.1, rmax=10.0,
              usepbc=True, selupdate=False, first=0, last=-1, step=1):
+        """Radius distribution function
+        
+        Arguments:
+            outfile {string} -- output file of gfor
+            sel1 {string} -- center
+            sel2 {string} -- surrounding
+        
+        Keyword Arguments:
+            delta {float} --  bin size (default: {0.1})
+            rmax {float} -- maximum r  (default: {10.0})
+            usepbc {bool} -- periodic boundary condition (default: {True})
+            selupdate {bool} -- update selections (default: {False})
+            first {int} -- first frame (default: {0})
+            last {int} -- last frame (default: {-1})
+            step {int} -- step (default: {1})
+        
+        Returns:
+            tcl -- tcl code to measure gofr
+        """
         
         tcl = textwrap.dedent(
             """
@@ -95,7 +114,7 @@ class Measure:
             set sel1 [atomselect top {1}]
             set sel2 [atomselect top {2}]
 
-            set gr [measure gofr $sel1 $sel2 delta {3} rmax {4} \
+            set gr [measure gofr $sel1 $sel2 delta {3} rmax {4} \\
                     usepbc {5} selupdate {6} first {7} last {8} step {9}]
             
             set r [lindex $gr 0]
@@ -110,6 +129,7 @@ class Measure:
                  usepbc, selupdate, first, last, step)
         
         return tcl
+
 
     def make_vmd_input(self):
         
