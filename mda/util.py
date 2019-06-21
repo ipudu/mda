@@ -1,5 +1,5 @@
+import os
 import textwrap
-from termcolor import colored
 
 width = 80
 
@@ -19,8 +19,25 @@ def output_welcome():
     
     logo += '.' * width
 
-    print(colored(logo, 'green'))
+    print(logo)
 
+def output_end():
+    art = '.' * width
+    art +=  """
+                           .
+                          ":"
+                        ___:____     |"\/"|
+                      ,'        `.    \  /
+                      |  O        \___/  |
+                    ~^~^~^~^~^~^~^~^~^~^~^~^~
+            """
+
+    print(art)
+
+    from shutil import which
+    # FIXME: the stdout will go to the top of log file
+    if which('fortune'):
+        os.system('fortune')
 
 if __name__ == '__main__':
     output_welcome()
