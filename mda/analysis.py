@@ -5,22 +5,28 @@ import numpy as np
 
 from numpy import linalg as LA
 from input import Parser
+from datetime import datetime
 
 
 class Measure:
+
+    def __init__(self, parser):
+
+        self.inp = parser.data
+        self.vmd = parser.vmd
+        self.other = parser.other
+        self.single = parser.single
+        self.outfile = parser.outfile
+
+        self.run()
+
+    def load(self, topo, traj):
+        self.u = MDAnalysis.Universe(topo, traj)
     
-    def __init__(self, inputfile):
-        self.inp = inputfile
-        self.make_vmd_input()
-        #self.run()
+    def load_single(self, single):
+        self.u = MDAnalysis.Universe(single)
 
-        # TODO:............................................
-        self.gyration_tensor('gt.dat', 'all', 
-                            '/Users/pudu/Desktop/chain_3_2.xyz',
-                            '/Users/pudu/Desktop/chain_3_2.xyz')
-        # .................................................
-
-    def load(self, topo, topo_t, traj, traj_t):
+    def vmd_load(self, topo, topo_t, traj, traj_t):
         """Load topology and trajectory
         
         Arguments:
@@ -32,23 +38,49 @@ class Measure:
         Returns:
             string -- tcl code to load topo and traj
         """
-        
-        tcl = textwrap.dedent(
-                """
-                # load topology and trajectory
-                mol new {0} type {1} waitfor all
-                mol addfile {2} type {3} waitfor all
-                """).format(topo, topo_t, traj, traj_t)
+
+        if topo_t.lower() == 'lammpsdata':
+            # note: using the default sytle (full)
+            tcl = textwrap.dedent(
+                    """
+                    # load topology and trajectory
+                    topo readlammpsdata {0}
+                    mol addfile {1} type {2} waitfor all
+                    """).format(topo, traj, traj_t)
+        else:
+            tcl = textwrap.dedent(
+                    """
+                    # load topology and trajectory
+                    mol new {0} type {1} waitfor all
+                    mol addfile {2} type {3} waitfor all
+                    """).format(topo, topo_t, traj, traj_t)
         
         return tcl
-    
-    def rg(self, outfile, sel, weight='mass'):
+
+    def vmd_load_single(self, single):
+        """Load single file
+        
+        Arguments:
+            single {string} -- single file
+        
+        Returns:
+            string -- tcl code to load single file
+        """
+
+        tcl = textwrap.dedent(
+                """
+                # load single
+                mol new {0} waitfor all
+                """).format(single)
+
+        return tcl
+ 
+    def rg(self, sel, weight='mass'):
         """Radius of Gyration
 
         rg = sqrt(sum (mass(n) ( r(n) - r(com) )^2)/sum(mass(n)))
         
         Arguments:
-            outfile {string} -- output file of Rg
             sel {string} -- atom selection
         
         Keyword Arguments:
@@ -57,6 +89,8 @@ class Measure:
         Returns:
             string -- tcl code to measure Rg
         """
+
+        outfile, time = self.outfile_and_time(self.rg, sel)
         
         tcl = textwrap.dedent(
             """
@@ -66,6 +100,7 @@ class Measure:
         
             # set output file
             set outfile [open {0} w]
+            puts $outfile "{3}"
         
             # select molecules
             set sel [atomselect top "{1}"]
@@ -84,17 +119,16 @@ class Measure:
 
             close $outfile
             """
-        ).format(outfile, sel, weight)      
+        ).format(outfile, sel, weight, time)
 
         return tcl
     
 
-    def gofr(self, outfile, sel1, sel2, delta=0.1, rmax=10.0,
+    def gofr(self, sel1, sel2, delta=0.1, rmax=10.0,
              usepbc=True, selupdate=False, first=0, last=-1, step=1):
         """Radius distribution function
         
         Arguments:
-            outfile {string} -- output file of gfor
             sel1 {string} -- center
             sel2 {string} -- surrounding
         
@@ -110,6 +144,8 @@ class Measure:
         Returns:
             string -- tcl code to measure gofr
         """
+
+        outfile, time = self.outfile_and_time(self.gofr, sel1+' '+sel2)
         
         tcl = textwrap.dedent(
             """
@@ -119,6 +155,7 @@ class Measure:
 
             # set output file
             set outfile [open {0} w]
+            puts $outfile "{10}"
             
             # select center and surrounding
             set sel1 [atomselect top {1}]
@@ -136,15 +173,14 @@ class Measure:
             close $outfile         
             """
         ).format(outfile, sel1, sel2, delta, rmax,
-                 usepbc, selupdate, first, last, step)
+                 usepbc, selupdate, first, last, step, time)
         
         return tcl
 
-    def sasa(self, outfile, sel, srad=1.4):
+    def sasa(self, sel, srad=1.4):
         """Solvent accessible surface area
         
         Arguments:
-            outfile {string} -- output file of sasa
             sel {string} -- atom selection
         
         Keyword Arguments:
@@ -152,7 +188,9 @@ class Measure:
         
         Returns:
             string -- tcl code to measure sasa
-        """                                 
+        """
+
+        outfile, time = self.outfile_and_time(self.sasa, sel)                                 
 
         tcl = textwrap.dedent(
             """
@@ -162,6 +200,7 @@ class Measure:
             
             # set output file
             set outfile [open {0} w]
+            puts $outfile "{3}"
             
             # select molecules
             set sel [atomselect top {1}]
@@ -180,19 +219,19 @@ class Measure:
 
             close $outfile     
             """
-        ).format(outfile, sel, srad)
+        ).format(outfile, sel, srad, time)
         
         return tcl
     
-    def gyration_tensor(self, outfile, sel, topo, traj):
-        
-        u = MDAnalysis.Universe(topo, traj)
+    def gt(self, sel):
 
-        sel = u.select_atoms(sel)
+        outfile, time = self.outfile_and_time(self.gt, sel) 
+        
+        sel = self.u.select_atoms(sel)
 
         W = []
 
-        for ts in u.trajectory:
+        for ts in self.u.trajectory:
             diff = sel.positions - sel.center_of_mass()
 
             tmp1 = np.sum(diff ** 2, axis=0)
@@ -208,12 +247,12 @@ class Measure:
             W.append(np.sort(w)[::-1])
 
         with open(outfile, 'w') as f:
-            f.write('# Gyration tensor\n')
             f.write('# lambda1 lambda2 lambda3 Rg kappa^2 b\n')
             f.write('# diag(lambda1, lambda2, lambda3) = eigenvalue(S)\n')
             f.write('# lambda1 + lambda2 + lambda3 = Rg^2\n')
-            f.write('# kappa^2 = 1 - 3(l1l2 + l2l3 + l3l1)/(l1 + l1 + l3)^2\n')
+            f.write('# kappa^2 = 1 - 3(l1l2 + l2l3 + l3l1)/(l1 + l2 + l3)^2\n')
             f.write('# b = lmabda1 - 0.5(lambda2 + lambda3)\n')
+            f.write(time + '\n')
         
             W = np.array(W)
 
@@ -226,24 +265,61 @@ class Measure:
                 f.write('{} {} {} {} {} {}\n'.format(w[0], w[1], w[2], 
                                                    Rg, kappa2, b))
 
-    def make_vmd_input(self):
-
-        topo, topo_t, traj, traj_t = \
-        self.inp['topo']['path'], self.inp['topo']['type'], \
-        self.inp['traj']['path'], self.inp['traj']['type']
+    def vmd_make_input(self):
 
         with open('mda.tcl', 'w') as f:
-            f.write(self.load(topo, topo_t, traj, traj_t))
+            if self.single is None:
+
+                topo, topo_t, traj, traj_t = \
+                self.inp['topo']['path'], self.inp['topo']['type'], \
+                self.inp['traj']['path'], self.inp['traj']['type']
+
+                f.write(self.vmd_load(topo, topo_t, traj, traj_t))
             
-            # TODO:............................................
-            f.write(self.rg('rg.dat', 'all'))
-            f.write(self.gofr('gofr.dat', 'all', 'all'))
-            f.write(self.sasa('sasa.dat', 'all'))
-            # .................................................
+            else:
+                f.write(self.vmd_load_single(self.single))
+
+            
+            for k, v in self.vmd.items():
+                calculation = getattr(self, k)
+                for j in v:
+                    f.write(calculation(**self.inp['measure'][j]))
+
+    def outfile_and_time(self, func, sel):
+        """Get output file name and time
+        
+        Arguments:
+            func {method} -- method called
+        
+        Returns:
+            string -- outfile and time
+        """
+
+        outfile = self.outfile + '_' + func.__name__ + '_' + \
+                    '-'.join(sel.split()) + '.dat'
+        time = datetime.now().strftime("# %m/%d/%Y, %H:%M:%S")
+        
+        return outfile, time
 
     def run(self):
-        os.system('vmd -dispdev text < mda.tcl > vmd.log')
+
+        if self.vmd:
+            self.vmd_make_input()
+            os.system('vmd -dispdev text < mda.tcl > vmd.log')
+        if self.other:
+            if self.single:
+                self.load_single(self.single)
+            else:
+                self.load(self.inp['topo']['path'], 
+                          self.inp['traj']['path'])
+
+            # run calculations
+            for k, v in self.other.items():
+                calculation = getattr(self, k)
+                for j in v:
+                    calculation(**self.inp['measure'][j])
+
 
 if __name__ == '__main__':
     p = Parser('input.yaml')
-    Measure(p.data)
+    Measure(p)
