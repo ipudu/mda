@@ -4,32 +4,33 @@ import textwrap
 width = 80
 
 def output_welcome():
-    logo = textwrap.dedent("""
-                                                          88            
-                                                          88            
-                                                          88            
-                              88,dPYba,,adPYba,    ,adPPYb,88  ,adPPYYba,
-                              88P'   "88"    "8a  a8"    `Y88  ""     `Y8
-                              88      88      88  8b       88  ,adPPPPP88
-                              88      88      88  "8a,   ,d88  88,    ,88
-                              88      88      88   `"8bbdP"Y8  `"8bbdP"Y8
-                              
-                              mda: analysis tools for MD simulations
-                           """)
-    
-    logo += '.' * width
 
+#................................................................................
+    logo = """
+                                            88            
+                                            88            
+                                            88            
+                88,dPYba,,adPYba,    ,adPPYb,88  ,adPPYYba,
+                88P'   "88"    "8a  a8"    `Y88  ""     `Y8
+                88      88      88  8b       88  ,adPPPPP88
+                88      88      88  "8a,   ,d88  88,    ,88
+                88      88      88   `"8bbdP"Y8  `"8bbdP"Y8
+                
+                mda: analysis tools for MD simulations
+            """
+    
+    logo += '\n' + '.' * width
     print(logo)
 
 def output_end():
-    art = '.' * width
+    art = '\n' + '.' * width
     art +=  """
-                           .
-                          ":"
-                        ___:____     |"\/"|
-                      ,'        `.    \  /
-                      |  O        \___/  |
-                    ~^~^~^~^~^~^~^~^~^~^~^~^~
+                                .
+                                ":"
+                              ___:____     |"\/"|
+                            ,'        `.    \  /
+                            |  O        \___/  |
+                          ~^~^~^~^~^~^~^~^~^~^~^~^~
             """
 
     print(art)
@@ -41,3 +42,4 @@ def output_end():
 
 if __name__ == '__main__':
     output_welcome()
+    output_end()
