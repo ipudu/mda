@@ -18,7 +18,7 @@ vmd_traj = ['binpos', 'crd', 'crdbox', 'nc', 'dcd',
             'h5', 'lammpstrj', 'nc', 'xml', 'OUTCAR',
             'XCATCAR', 'vtf', 'axsf', 'xsf', 'xyz']
 
-vmd_single = ['xyz', 'pdb', 'mol2']
+single = ['xyz', 'pdb', 'mol2']
 
 # VMD analysis
 # http://www-s.ks.uiuc.edu/Research/vmd/vmd-1.9.1/ug/node136.html
@@ -32,7 +32,7 @@ vmd_measure = ['avpos', 'center', 'cluster', 'contacts',
                'surface', 'pbc2onc', 'pbcneighbors',
                'inertia', 'symmetry', 'vmd']
 
-others = ['gt']
+other = ['gt']
 
 class Parser:
 
@@ -55,16 +55,17 @@ class Parser:
         
         self.single = None
         self.vmd = {}
+        self.other = {}
  
         # check if it's only single traj without topo
-        for f in vmd_single:
-            if f in self.data:
-                self.single = f
+        for i in self.data:
+            if i in single:
+                self.single = self.data[i]
 
         if 'measure' not in self.data:
             raise Exception("No calculation specified!")
         
-        # check if using vmd backend
+        # check if using vmd as backend
         for m in self.data['measure']:
             for j in vmd_measure:
                 if m.startswith(j):
@@ -72,6 +73,15 @@ class Parser:
                         self.vmd[j].append(m)
                     else:
                         self.vmd[j] = [m]
+
+        # check if using MDAnalysis as backend
+        for m in self.data['measure']:
+            for j in other:
+                if m.startswith(j):
+                    if j in self.vmd:
+                        self.other[j].append(m)
+                    else:
+                        self.other[j] = [m]
 
         if self.single is None:
             if 'topo' not in self.data:
