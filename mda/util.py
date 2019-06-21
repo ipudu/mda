@@ -1,11 +1,34 @@
 import os
+import time
 import textwrap
 
 width = 80
 
-def output_welcome():
+def timeit(method):
+    """Output the time a function takes to execute
 
-#................................................................................
+    Arguments:
+        method {function} -- function called
+
+    Returns:
+        string -- time
+    """
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            print('%r  %2.2f ms' % \
+                (method.__name__, (te - ts) * 1000))
+        return result
+    return timed
+
+def output_welcome():
+    
+    #............................................................................
     logo = """
                                             88            
                                             88            
@@ -16,7 +39,7 @@ def output_welcome():
                 88      88      88  "8a,   ,d88  88,    ,88
                 88      88      88   `"8bbdP"Y8  `"8bbdP"Y8
                 
-                mda: analysis tools for MD simulations
+                   mda: analysis tools for MD simulations
             """
     
     logo += '\n' + '.' * width
