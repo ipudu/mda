@@ -1,7 +1,9 @@
 import os
 import textwrap
+import MDAnalysis
 import numpy as np
 
+from numpy import linalg as LA
 from input import Parser
 
 
@@ -10,7 +12,13 @@ class Measure:
     def __init__(self, inputfile):
         self.inp = inputfile
         self.make_vmd_input()
-        self.run()
+        #self.run()
+
+        # TODO:............................................
+        self.gyration_tensor('gt.dat', 'all', 
+                            '/Users/pudu/Desktop/chain_3_2.xyz',
+                            '/Users/pudu/Desktop/chain_3_2.xyz')
+        # .................................................
 
     def load(self, topo, topo_t, traj, traj_t):
         """Load topology and trajectory
@@ -28,7 +36,7 @@ class Measure:
         tcl = textwrap.dedent(
                 """
                 # load topology and trajectory
-                mol new {0} type {1}
+                mol new {0} type {1} waitfor all
                 mol addfile {2} type {3} waitfor all
                 """).format(topo, topo_t, traj, traj_t)
         
@@ -175,9 +183,50 @@ class Measure:
         ).format(outfile, sel, srad)
         
         return tcl
+    
+    def gyration_tensor(self, outfile, sel, topo, traj):
+        
+        u = MDAnalysis.Universe(topo, traj)
+
+        sel = u.select_atoms(sel)
+
+        W = []
+
+        for ts in u.trajectory:
+            diff = sel.positions - sel.center_of_mass()
+
+            tmp1 = np.sum(diff ** 2, axis=0)
+            tmp2 = np.sum(diff[:,0] * diff[:,1], axis=0)
+            tmp3 = np.sum(diff[:,0] * diff[:,2], axis=0)
+            tmp4 = np.sum(diff[:,1] * diff[:,2], axis=0)
+
+            S = 1 / sel.n_atoms * np.array([[tmp1[0], tmp2,    tmp3],
+                                            [tmp2,    tmp1[1], tmp4],
+                                            [tmp3,    tmp4,    tmp1[2]]])
+            
+            w, _ = LA.eig(S)
+            W.append(np.sort(w)[::-1])
+
+        with open(outfile, 'w') as f:
+            f.write('# Gyration tensor\n')
+            f.write('# lambda1 lambda2 lambda3 Rg kappa^2 b\n')
+            f.write('# diag(lambda1, lambda2, lambda3) = eigenvalue(S)\n')
+            f.write('# lambda1 + lambda2 + lambda3 = Rg^2\n')
+            f.write('# kappa^2 = 1 - 3(l1l2 + l2l3 + l3l1)/(l1 + l1 + l3)^2\n')
+            f.write('# b = lmabda1 - 0.5(lambda2 + lambda3)\n')
+        
+            W = np.array(W)
+
+            for w in W:
+                Rg = np.sqrt(np.sum(w))
+                kappa2 = 1 - 3 *(w[0] * w[1] + w[1] * w[2] + w[2] * w[0]) / \
+                         (np.sum(w)) ** 2
+                b = b = w[0] - 0.5 * (w[1]+w[2])
+
+                f.write('{} {} {} {} {} {}\n'.format(w[0], w[1], w[2], 
+                                                   Rg, kappa2, b))
 
     def make_vmd_input(self):
-        
 
         topo, topo_t, traj, traj_t = \
         self.inp['topo']['path'], self.inp['topo']['type'], \
@@ -191,7 +240,7 @@ class Measure:
             f.write(self.gofr('gofr.dat', 'all', 'all'))
             f.write(self.sasa('sasa.dat', 'all'))
             # .................................................
-    
+
     def run(self):
         os.system('vmd -dispdev text < mda.tcl > vmd.log')
 
