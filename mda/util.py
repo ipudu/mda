@@ -40,7 +40,7 @@ def output_welcome():
                 88      .a8P   88    `888'    88   d8'        `8b   
                 88888888Y"'    88     `8'     88  d8'          `8b  
                                                                 
-                     MDA: analysis tools for MD simulations
+                     MDA: Analysis Tools for MD Simulations
             """
 
     logo += '\n' + '.' * width

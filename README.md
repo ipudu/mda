@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# MDA: Analysis tools for MD simulations
+# MDA: Analysis Tools for MD Simulations
 
 ![version](https://img.shields.io/pypi/v/mda.svg?style=flat-square&logo=visual-studio-code)
 ![python](https://img.shields.io/pypi/pyversions/mda.svg?style=flat-square&logo=python)
