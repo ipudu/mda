@@ -243,7 +243,11 @@ class Measure:
             
             # set output file
             set outfile [open {0} w]
-            puts $outfile "# lambda1 lambda2 lambda3"
+            puts $outfile "# lambda1 lambda2 lambda3\\
+                           acylindricity asphericity"
+            puts $outfile "# acyindricity = (l2 - l3)/(l1 + l2 + l3)"
+            puts $outfile "# asphericity = (l1 - 0.5(l2 + l3))/(l1 + l2 + l3)"
+
             puts $outfile "{2}"
             
             # select molecules
@@ -260,7 +264,14 @@ class Measure:
                 #set com [lindex $inertia 0]
                 #set moment [lindex $inertia 1]
                 set eigen [lindex $inertia 2]
-                puts $outfile "$eigen"
+                
+                set l1 [lindex $eigen 0]
+                set l2 [lindex $eigen 1]
+                set l3 [lindex $eigen 2]
+
+                set cs [expr ($l2-$l3)/($l1+$l2+$l3)]
+                set s [expr ($l1-($l2+$l3)/2)/($l1+$l2+$l3)]
+                puts $outfile "$eigen $cs $s"
                 
             }}
 
