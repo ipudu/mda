@@ -22,7 +22,7 @@ single = ['xyz', 'pdb', 'mol2']
 
 # VMD analysis
 # http://www-s.ks.uiuc.edu/Research/vmd/vmd-1.9.1/ug/node136.html
-# the last one, vmd is magic
+# the last one, tcl is magic
 
 vmd_measure = ['avpos', 'center', 'cluster', 'contacts',
                'dipole', 'fit', 'gofr', 'hbonds', 
@@ -30,7 +30,7 @@ vmd_measure = ['avpos', 'center', 'cluster', 'contacts',
                'rmsf', 'sasa', 'sumweights', 'bond',
                'angle', 'dihed', 'imprp', 'energy',
                'surface', 'pbc2onc', 'pbcneighbors',
-               'inertia', 'symmetry', 'vmd']
+               'inertia', 'symmetry', 'tcl']
 
 other = ['gt']
 
