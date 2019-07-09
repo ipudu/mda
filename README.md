@@ -12,7 +12,7 @@
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install mda.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install MDA.
 
 ```bash
 pip install mda
@@ -24,10 +24,23 @@ pip install mda
 import mda
 ```
 
+## Feature Support
+
+**MDA** can be used to calculate following properties:
+
+- Inertia tensor
+- Gyration tensor
+- Radial distribution function
+- Radius of gyration
+- Solvent accessible surface area
+- and more
+
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
