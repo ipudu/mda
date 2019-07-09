@@ -12,7 +12,7 @@
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install MDA.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install **MDA**.
 
 ```bash
 pip install mda

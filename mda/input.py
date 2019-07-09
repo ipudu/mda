@@ -46,7 +46,7 @@ class Parser:
         stream = open(infile, 'r')
         self.data = yaml.load(stream, Loader=yaml.FullLoader)
         self.check()
-        #self.output()
+        self.output()
 
 
     def check(self):

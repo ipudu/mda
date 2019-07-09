@@ -43,7 +43,7 @@ def output_welcome():
                      MDA: Analysis Tools for MD Simulations
             """
 
-    logo += '\n' + '.' * width
+    logo += '\n' + '.' * width + '\n'
     print(logo)
 
 def output_end():

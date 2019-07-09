@@ -6,8 +6,8 @@ from mda.analysis import Measure
 
 
 def mda():
-    parser = argparse.ArgumentParser(description='mda: analysis tools for MD simulations')
-    parser.add_argument('input', type=str, help='input file of mda')
+    parser = argparse.ArgumentParser(description='MDA: Analysis Tools for MD Simulations')
+    parser.add_argument('input', type=str, help='input file of MDA')
     args = parser.parse_args()
 
     # TODO:
