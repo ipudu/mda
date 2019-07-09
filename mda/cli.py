@@ -1,8 +1,8 @@
 import argparse
-import util
 
-from input import Parser
-from analysis import Measure
+from mda import util
+from mda.input import Parser
+from mda.analysis import Measure
 
 
 def mda():

@@ -4,7 +4,7 @@ import MDAnalysis
 import numpy as np
 
 from numpy import linalg as LA
-from input import Parser
+from mda.input import Parser
 from datetime import datetime
 
 
