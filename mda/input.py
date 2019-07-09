@@ -16,7 +16,8 @@ vmd_topo = ['parm', 'prmtop', 'parm7', 'rst7',
 vmd_traj = ['binpos', 'crd', 'crdbox', 'nc', 'dcd',
             'cpmd', 'dlpolyhist', 'trr', 'xtc', 'tng',
             'h5', 'lammpstrj', 'nc', 'xml', 'OUTCAR',
-            'XCATCAR', 'vtf', 'axsf', 'xsf', 'xyz']
+            'XCATCAR', 'vtf', 'axsf', 'xsf', 'xyz',
+            'netcdf']
 
 single = ['xyz', 'pdb', 'mol2']
 
