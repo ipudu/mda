@@ -158,8 +158,8 @@ class Measure:
             puts $outfile "{10}"
             
             # select center and surrounding
-            set sel1 [atomselect top {1}]
-            set sel2 [atomselect top {2}]
+            set sel1 [atomselect top "{1}"]
+            set sel2 [atomselect top "{2}"]
 
             set gr [measure gofr $sel1 $sel2 delta {3} rmax {4} \\
                     usepbc {5} selupdate {6} first {7} last {8} step {9}]
@@ -203,7 +203,7 @@ class Measure:
             puts $outfile "{3}"
             
             # select molecules
-            set sel [atomselect top {1}]
+            set sel [atomselect top "{1}"]
 
             # loop over frames
             set nf [molinfo top get numframes]
@@ -251,7 +251,7 @@ class Measure:
             puts $outfile "{2}"
             
             # select molecules
-            set sel [atomselect top {1}]
+            set sel [atomselect top "{1}"]
 
             # loop over frames
             set nf [molinfo top get numframes]
