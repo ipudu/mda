@@ -282,6 +282,14 @@ class Measure:
         return tcl
 
     def tcl(self, cmd):
+        """tcl commands
+        
+        Arguments:
+            cmd {string} -- commands
+        
+        Returns:
+            tcl -- tcl codes
+        """
         outfile, time = self.outfile_and_time(self.tcl, 'vmd')
 
         tcl = textwrap.dedent(
@@ -292,6 +300,7 @@ class Measure:
 
             """
         )
+
         tcl += cmd
 
         return tcl
