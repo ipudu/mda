@@ -1,6 +1,8 @@
+import sys
 import argparse
 
 from mda import util
+from mda.log import Logger
 from mda.input import Parser
 from mda.analysis import Measure
 
@@ -11,6 +13,7 @@ def mda():
     args = parser.parse_args()
 
     # TODO:
+    sys.stdout = Logger()
     util.output_welcome()
 
     p = Parser(args.input)
