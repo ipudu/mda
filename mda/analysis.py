@@ -45,16 +45,22 @@ class Measure:
                     """
                     # load topology and trajectory
                     topo readlammpsdata {0}
-                    mol addfile {1} type {2} waitfor all
-                    """).format(topo, traj, traj_t)
+                    """).format(topo)
         else:
             tcl = textwrap.dedent(
                     """
                     # load topology and trajectory
-                    mol new {0} type {1} waitfor all
-                    mol addfile {2} type {3} waitfor all
-                    """).format(topo, topo_t, traj, traj_t)
+                    mol new {0} type {1}
+                    """).format(topo, topo_t)
+
+        if type(traj) == list:
+            for t in traj:
+                tcl += '\nmol addfile {0} type {1} waitfor all'.format(t, traj_t)
+        else:
+            tcl += '\nmol addfile {0} type {1} waitfor all'.format(traj, traj_t)
         
+        tcl += '\n'
+
         return tcl
 
     def vmd_load_single(self, single):
