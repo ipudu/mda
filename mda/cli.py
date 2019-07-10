@@ -14,12 +14,12 @@ def mda():
 
     # TODO:
     sys.stdout = Logger()
-    util.output_welcome()
+    start = util.output_welcome()
 
     p = Parser(args.input)
     Measure(p)
 
-    util.output_end()
+    util.output_end(start)
 
 if __name__ == '__main__':
     mda()
