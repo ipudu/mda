@@ -360,7 +360,7 @@ class Measure:
 
     def vmd_make_input(self):
 
-        with open('mda.tcl', 'w') as f:
+        with open('.mda/mda.tcl', 'w') as f:
             if self.single is None:
 
                 topo, topo_t, traj, traj_t = \
@@ -395,10 +395,13 @@ class Measure:
         return outfile, time
 
     def run(self):
+        
+        # make dir for mda files
+        os.system('mkdir -p .mda')
 
         if self.vmd:
             self.vmd_make_input()
-            os.system('vmd -dispdev text < mda.tcl > vmd.log')
+            os.system('vmd -dispdev text < .mda/mda.tcl > .mda/vmd.log')
         if self.other:
             if self.single:
                 self.load_single(self.single)
