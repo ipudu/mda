@@ -2,6 +2,9 @@ import time
 import textwrap
 import subprocess
 
+from datetime import datetime
+from shutil import which
+
 width = 80
 
 def timeit(method):
@@ -46,7 +49,16 @@ def output_welcome():
     logo += '\n' + '.' * width + '\n'
     print(logo)
 
-def output_end():
+    return time.time()
+
+def output_end(start):
+    e = time.time() - start
+    print('\nTotal elapsed time: {} days {} hours {} minutes {:.1f} seconds'.format(*time_convert(e)))
+
+    now = datetime.now()
+    date_time = now.strftime("%a %b %d %H:%M:%S %Y.")
+    print('Normal termination of MDA at', date_time)
+
     art = '\n' + '.' * width
     art +=  """
                                 .
@@ -59,11 +71,16 @@ def output_end():
 
     print(art)
 
-    from shutil import which
     if which('fortune'):
         fortune = subprocess.check_output('fortune', shell=True)
         print(str(fortune, 'utf-8'))
 
-if __name__ == '__main__':
-    output_welcome()
-    output_end()
+def time_convert(time):
+    day = time // (24 * 3600)
+    time = time % (24 * 3600)
+    hour = time // 3600
+    time %= 3600
+    minutes = time // 60
+    time %= 60
+    seconds = time
+    return int(day), int(hour), int(minutes), seconds
