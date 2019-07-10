@@ -1,6 +1,6 @@
-import os
 import time
 import textwrap
+import subprocess
 
 width = 80
 
@@ -60,9 +60,9 @@ def output_end():
     print(art)
 
     from shutil import which
-    # FIXME: the stdout will go to the top of log file
     if which('fortune'):
-        os.system('fortune')
+        fortune = subprocess.check_output('fortune', shell=True)
+        print(str(fortune, 'utf-8'))
 
 if __name__ == '__main__':
     output_welcome()
