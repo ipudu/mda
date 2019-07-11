@@ -250,9 +250,11 @@ class Measure:
             # set output file
             set outfile [open {0} w]
             puts $outfile "# lambda1 lambda2 lambda3\\
-                           acylindricity asphericity"
+                           acylindricity asphericity1 asphericity2 S"
             puts $outfile "# acyindricity = (l2 - l3)/(l1 + l2 + l3)"
-            puts $outfile "# asphericity = (l1 - 0.5(l2 + l3))/(l1 + l2 + l3)"
+            puts $outfile "# asphericity1 = (l1 - 0.5(l2 + l3))/(l1 + l2 + l3)"
+            puts $outfile "# asphericity2 = 1.5 * sum((l_i - l_mean) ** 2) / (l1 + l2 + l3) ** 2"
+            puts $outfile "# S = 27 * prod(l1-l_mean) / (l1 + l2 + l3) ** 3"
 
             puts $outfile "{2}"
             
@@ -274,10 +276,16 @@ class Measure:
                 set l1 [lindex $eigen 0]
                 set l2 [lindex $eigen 1]
                 set l3 [lindex $eigen 2]
+                
+                set ls [expr $l1+$l2+$l3]
+                set lm [expr $ls/3]
+
 
                 set cs [expr ($l2-$l3)/($l1+$l2+$l3)]
-                set s [expr ($l1-($l2+$l3)/2)/($l1+$l2+$l3)]
-                puts $outfile "$eigen $cs $s"
+                set a1 [expr ($l1-($l2+$l3)/2)/($l1+$l2+$l3)]
+                set a2 [expr 1.5/($ls*$ls)*(($l1-$lm)*($l1-$lm)+($l2-$lm)*($l2-$lm)+($l3-$lm)*($l3-$lm))]
+                set s [expr 27*(($l1-$lm)*($l2-$lm)*($l3-$lm))/($ls*$ls*$ls)]
+                puts $outfile "$eigen $cs $a1 $a2 $s"
                 
             }}
 
@@ -401,7 +409,8 @@ class Measure:
 
         if self.vmd:
             self.vmd_make_input()
-            os.system('vmd -dispdev text < .mda/mda.tcl > .mda/vmd.log')
+            #os.system('vmd -dispdev text < .mda/mda.tcl > .mda/vmd.log')
+            os.system('vmd -dispdev text < .mda/mda.tcl')
         if self.other:
             if self.single:
                 self.load_single(self.single)
