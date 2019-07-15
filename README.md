@@ -28,12 +28,22 @@ import mda
 
 **MDA** can be used to calculate following properties:
 
-- Inertia tensor
+- Inertia tensor (Acylindricity, Asphericity, Shape)
 - Gyration tensor
 - Radial distribution function
 - Radius of gyration
 - Solvent accessible surface area
 - and more
+
+**MDA** can be used to download scientific papers:
+
+```bash
+# using link:
+mda https://pubs.rsc.org/en/content/articlehtml/2017/cp/c7cp01602f
+
+# using DOI number:
+mda 10.1039/C7CP01602F 
+```
 
 ## Contributing
 

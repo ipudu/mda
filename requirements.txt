@@ -1,3 +1,4 @@
+mdanalysis
 numpy
 pyyaml
-mdanalysis
+retrying

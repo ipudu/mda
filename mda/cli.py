@@ -3,6 +3,7 @@ import argparse
 
 from mda import util
 from mda.log import Logger
+from mda.paper import Paper
 from mda.input import Parser
 from mda.analysis import Measure
 
@@ -15,9 +16,13 @@ def mda():
     # TODO:
     sys.stdout = Logger()
     start = util.output_welcome()
+ 
+    paper = Paper(args.input)
 
-    p = Parser(args.input)
-    Measure(p)
+    if not Paper:
+
+        p = Parser(args.input)
+        Measure(p)
 
     util.output_end(start)
 
