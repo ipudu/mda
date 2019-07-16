@@ -12,7 +12,15 @@
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install **MDA**.
+Clone and install the latest version of  **MDA**:
+
+```bash
+git clone https://github.com/ipudu/mda
+cd mda
+python setup.py install
+```
+
+Or use the package manager [pip](https://pip.pypa.io/en/stable/) to install stable **MDA**:
 
 ```bash
 pip install mda
