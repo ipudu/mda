@@ -19,7 +19,7 @@ def mda():
  
     paper = Paper(args.input)
 
-    if not Paper:
+    if not paper.flag:
 
         p = Parser(args.input)
         Measure(p)

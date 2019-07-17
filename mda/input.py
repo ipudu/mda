@@ -26,12 +26,14 @@ single = ['xyz', 'pdb', 'mol2']
 # the last one, tcl is magic
 
 vmd_measure = ['avpos', 'center', 'cluster', 'contacts',
-               'dipole', 'fit', 'gofr', 'hbonds', 
+               'dc', 'dipole', 'fit', 'gofr', 'hbonds', 
                'inverse', 'minmax', 'rg', 'rmsd',
                'rmsf', 'sasa', 'sumweights', 'bond',
                'angle', 'dihed', 'imprp', 'energy',
                'surface', 'pbc2onc', 'pbcneighbors',
                'inertia', 'symmetry', 'tcl']
+
+cpptraj = ['dc']
 
 other = ['gt']
 
@@ -56,6 +58,7 @@ class Parser:
         
         self.single = None
         self.vmd = {}
+        self.cpptraj = {}
         self.other = {}
  
         # check if it's only single traj without topo
@@ -75,11 +78,20 @@ class Parser:
                     else:
                         self.vmd[j] = [m]
 
+        # check if using CPPTRAJ as backend
+        for m in self.data['measure']:
+            for j in cpptraj:
+                if m.startswith(j):
+                    if j in self.cpptraj:
+                        self.cpptraj[j].append(m)
+                    else:
+                        self.cpptraj[j] = [m]
+
         # check if using MDAnalysis as backend
         for m in self.data['measure']:
             for j in other:
                 if m.startswith(j):
-                    if j in self.vmd:
+                    if j in self.other:
                         self.other[j].append(m)
                     else:
                         self.other[j] = [m]
@@ -97,6 +109,3 @@ class Parser:
         """Print out the structure of input file
         """     
         print(json.dumps(self.data, indent=4))
-
-if __name__ == '__main__':
-    Parser('input.yaml')

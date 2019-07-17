@@ -36,6 +36,7 @@ import mda
 
 **MDA** can be used to calculate following properties:
 
+- Diffusion coefficient (Mean square displacement)
 - Inertia tensor (Acylindricity, Asphericity, Shape)
 - Gyration tensor
 - Radial distribution function
@@ -50,7 +51,7 @@ import mda
 mda https://pubs.rsc.org/en/content/articlehtml/2017/cp/c7cp01602f
 
 # using DOI number:
-mda 10.1039/C7CP01602F 
+mda 10.1039/C7CP01602F
 ```
 
 ## Contributing
