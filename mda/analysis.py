@@ -83,16 +83,21 @@ class Measure:
 
         return tcl
     
-    def dc(self, sel):
+    def dc(self, sel, unwrapped=False):
         """Diffusion Coefficent
         
         Arguments:
             sel {string} -- atom selection
+            unwrap {bool} -- unwrapped coordinates or not
         
         Returns:
             tcl -- tcl code to write pdb
         """
         
+        pdb = self.outfile + '_pdb_'+ '-'.join(sel.split())
+        msd = self.outfile + '_msd_' + '-'.join(sel.split())
+        out = self.outfile + '_dc_' + '-'.join(sel.split())
+
         tcl = textwrap.dedent(
             """
             #..........................................................
@@ -101,17 +106,17 @@ class Measure:
 
             set sel [atomselect top "{0}"]
 
-            animate write pdb {0}_mda.pdb waitfor all sel $sel
+            animate write pdb {1}_mda.pdb waitfor all sel $sel
             """
-        ).format(sel)
-
-        msd = self.outfile + '_msd_' + sel
-        out = self.outfile + '_dc_' + sel
+        ).format(sel, pdb)
         
         with open('.mda/mda.cpptraj','w') as f:
-            f.write('parm {}_mda.pdb\n'.format(sel))
-            f.write('trajin {}_mda.pdb\n'.format(sel))
-            f.write('diffusion out {}.agr {} diffout {}.dat\n'.format(msd, sel, out))
+            f.write('parm {}_mda.pdb\n'.format(pdb))
+            f.write('trajin {}_mda.pdb\n'.format(pdb))
+            if unwrapped:
+                f.write('diffusion out {}.agr noimage {} diffout {}.dat\n'.format(msd, '-'.join(sel.split()), out))
+            else:
+                f.write('diffusion out {}.agr {} diffout {}.dat\n'.format(msd, '-'.join(sel.split()), out))
             f.write('run\n')
         
         return tcl
@@ -448,7 +453,7 @@ class Measure:
             os.system('vmd -dispdev text < .mda/mda.tcl')
         
         if self.cpptraj:
-            os.system('cpptraj < .mda/mda.cpptraj')
+            os.system('cpptraj < .mda/mda.cpptraj | tee .mda/cpptraj.log')
         
         if self.other:
             if self.single:
