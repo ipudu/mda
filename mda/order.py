@@ -27,7 +27,7 @@ class Order:
         print('Calculating order parameters:')
         
         progress = {'ncols': 80}
-        for ts in tqdm(self.u.trajectory[:10], **progress):
+        for ts in tqdm(self.u.trajectory, **progress):
 
             d = distance.distance_array(self.sel.positions, 
                                         self.sel.positions, ts.dimensions)
