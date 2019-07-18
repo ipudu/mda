@@ -35,7 +35,7 @@ vmd_measure = ['avpos', 'center', 'cluster', 'contacts',
 
 cpptraj = ['dc']
 
-other = ['gt']
+other = ['gt', 'order']
 
 class Parser:
 

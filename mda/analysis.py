@@ -6,6 +6,7 @@ import numpy as np
 from os import path
 from numpy import linalg as LA
 from mda.input import Parser
+from mda.order import Order
 from datetime import datetime
 
 
@@ -83,6 +84,16 @@ class Measure:
 
         return tcl
     
+    def order(self, sel):
+        """Order Parameters
+        
+        Arguments:
+            sel {string} -- atom selections
+        """
+        
+        o = Order(self.u, sel)
+        o.run()
+
     def dc(self, sel, unwrapped=False):
         """Diffusion Coefficent
         
