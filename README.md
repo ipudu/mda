@@ -39,6 +39,9 @@ import mda
 - Diffusion coefficient (Mean square displacement)
 - Inertia tensor (Acylindricity, Asphericity, Shape)
 - Gyration tensor
+- Order parameters:
+  - Orientational tetrahedral order
+  - Translational tetrahedral order
 - Radial distribution function
 - Radius of gyration
 - Solvent accessible surface area
