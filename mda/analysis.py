@@ -106,13 +106,13 @@ class Measure:
 
             set sel [atomselect top "{0}"]
 
-            animate write pdb {1}_mda.pdb waitfor all sel $sel
+            animate write pdb {1}.pdb waitfor all sel $sel
             """
         ).format(sel, pdb)
         
         with open('.mda/mda.cpptraj','w') as f:
-            f.write('parm {}_mda.pdb\n'.format(pdb))
-            f.write('trajin {}_mda.pdb\n'.format(pdb))
+            f.write('parm {}.pdb\n'.format(pdb))
+            f.write('trajin {}.pdb\n'.format(pdb))
             if unwrapped:
                 f.write('diffusion out {}.agr noimage {} diffout {}.dat\n'.format(msd, '-'.join(sel.split()), out))
             else:
