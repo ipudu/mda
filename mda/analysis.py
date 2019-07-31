@@ -11,7 +11,6 @@ from datetime import datetime
 
 
 class Measure:
-
     def __init__(self, parser):
 
         self.inp = parser.data
@@ -25,7 +24,7 @@ class Measure:
 
     def load(self, topo, traj):
         self.u = MDAnalysis.Universe(topo, traj)
-    
+
     def load_single(self, single):
         self.u = MDAnalysis.Universe(single)
 
@@ -42,27 +41,29 @@ class Measure:
             string -- tcl code to load topo and traj
         """
 
-        if topo_t.lower() == 'lammpsdata':
+        if topo_t.lower() == "lammpsdata":
             # note: using the default sytle (full)
             tcl = textwrap.dedent(
-                    """
+                """
                     # load topology and trajectory
                     topo readlammpsdata {0}
-                    """).format(topo)
+                    """
+            ).format(topo)
         else:
             tcl = textwrap.dedent(
-                    """
+                """
                     # load topology and trajectory
                     mol new {0} type {1}
-                    """).format(topo, topo_t)
+                    """
+            ).format(topo, topo_t)
 
         if type(traj) == list:
             for t in traj:
-                tcl += '\nmol addfile {0} type {1} waitfor all'.format(t, traj_t)
+                tcl += "\nmol addfile {0} type {1} waitfor all".format(t, traj_t)
         else:
-            tcl += '\nmol addfile {0} type {1} waitfor all'.format(traj, traj_t)
-        
-        tcl += '\n'
+            tcl += "\nmol addfile {0} type {1} waitfor all".format(traj, traj_t)
+
+        tcl += "\n"
 
         return tcl
 
@@ -77,20 +78,21 @@ class Measure:
         """
 
         tcl = textwrap.dedent(
-                """
+            """
                 # load single
                 mol new {0} waitfor all
-                """).format(single)
+                """
+        ).format(single)
 
         return tcl
-    
+
     def order(self, sel):
         """Order Parameters
         
         Arguments:
             sel {string} -- atom selections
         """
-        
+
         o = Order(self.u, sel)
         o.run()
 
@@ -104,10 +106,10 @@ class Measure:
         Returns:
             tcl -- tcl code to write pdb
         """
-        
-        pdb = self.outfile + '_pdb_'+ '-'.join(sel.split())
-        msd = self.outfile + '_msd_' + '-'.join(sel.split())
-        out = self.outfile + '_dc_' + '-'.join(sel.split())
+
+        pdb = self.outfile + "_pdb_" + "-".join(sel.split())
+        msd = self.outfile + "_msd_" + "-".join(sel.split())
+        out = self.outfile + "_dc_" + "-".join(sel.split())
 
         tcl = textwrap.dedent(
             """
@@ -120,19 +122,27 @@ class Measure:
             animate write pdb {1}.pdb waitfor all sel $sel
             """
         ).format(sel, pdb)
-        
-        with open('.mda/mda.cpptraj','w') as f:
-            f.write('parm {}.pdb\n'.format(pdb))
-            f.write('trajin {}.pdb\n'.format(pdb))
+
+        with open(".mda/mda.cpptraj", "w") as f:
+            f.write("parm {}.pdb\n".format(pdb))
+            f.write("trajin {}.pdb\n".format(pdb))
             if unwrapped:
-                f.write('diffusion out {}.agr noimage {} diffout {}.dat\n'.format(msd, '-'.join(sel.split()), out))
+                f.write(
+                    "diffusion out {}.agr noimage {} diffout {}.dat\n".format(
+                        msd, "-".join(sel.split()), out
+                    )
+                )
             else:
-                f.write('diffusion out {}.agr {} diffout {}.dat\n'.format(msd, '-'.join(sel.split()), out))
-            f.write('run\n')
-        
+                f.write(
+                    "diffusion out {}.agr {} diffout {}.dat\n".format(
+                        msd, "-".join(sel.split()), out
+                    )
+                )
+            f.write("run\n")
+
         return tcl
 
-    def rg(self, sel, weight='mass'):
+    def rg(self, sel, weight="mass"):
         """Radius of Gyration
 
         rg = sqrt(sum (mass(n) ( r(n) - r(com) )^2)/sum(mass(n)))
@@ -148,7 +158,7 @@ class Measure:
         """
 
         outfile, time = self.outfile_and_time(self.rg, sel)
-        
+
         tcl = textwrap.dedent(
             """
             #..........................................................
@@ -179,10 +189,19 @@ class Measure:
         ).format(outfile, sel, weight, time)
 
         return tcl
-    
 
-    def gofr(self, sel1, sel2, delta=0.1, rmax=10.0,
-             usepbc=True, selupdate=False, first=0, last=-1, step=1):
+    def gofr(
+        self,
+        sel1,
+        sel2,
+        delta=0.1,
+        rmax=10.0,
+        usepbc=True,
+        selupdate=False,
+        first=0,
+        last=-1,
+        step=1,
+    ):
         """Radius distribution function
         
         Arguments:
@@ -202,8 +221,8 @@ class Measure:
             string -- tcl code to measure gofr
         """
 
-        outfile, time = self.outfile_and_time(self.gofr, sel1+' '+sel2)
-        
+        outfile, time = self.outfile_and_time(self.gofr, sel1 + " " + sel2)
+
         tcl = textwrap.dedent(
             """
             #..........................................................
@@ -229,9 +248,10 @@ class Measure:
             }}
             close $outfile         
             """
-        ).format(outfile, sel1, sel2, delta, rmax,
-                 usepbc, selupdate, first, last, step, time)
-        
+        ).format(
+            outfile, sel1, sel2, delta, rmax, usepbc, selupdate, first, last, step, time
+        )
+
         return tcl
 
     def sasa(self, sel, srad=1.4):
@@ -247,7 +267,7 @@ class Measure:
             string -- tcl code to measure sasa
         """
 
-        outfile, time = self.outfile_and_time(self.sasa, sel)                                 
+        outfile, time = self.outfile_and_time(self.sasa, sel)
 
         tcl = textwrap.dedent(
             """
@@ -277,9 +297,9 @@ class Measure:
             close $outfile     
             """
         ).format(outfile, sel, srad, time)
-        
+
         return tcl
-    
+
     def inertia(self, sel):
         """Inertia Tensor
         
@@ -289,7 +309,7 @@ class Measure:
         Returns:
             string -- tcl code to measure eigen values of IT
         """
-        
+
         outfile, time = self.outfile_and_time(self.inertia, sel)
 
         tcl = textwrap.dedent(
@@ -355,7 +375,7 @@ class Measure:
         Returns:
             tcl -- tcl codes
         """
-        outfile, time = self.outfile_and_time(self.tcl, 'vmd')
+        outfile, time = self.outfile_and_time(self.tcl, "vmd")
 
         tcl = textwrap.dedent(
             """
@@ -377,8 +397,8 @@ class Measure:
             sel {string} -- atom selection
         """
 
-        outfile, time = self.outfile_and_time(self.gt, sel) 
-        
+        outfile, time = self.outfile_and_time(self.gt, sel)
+
         sel = self.u.select_atoms(sel)
 
         W = []
@@ -387,55 +407,65 @@ class Measure:
             diff = sel.positions - sel.center_of_mass()
 
             tmp1 = np.sum(diff ** 2, axis=0)
-            tmp2 = np.sum(diff[:,0] * diff[:,1], axis=0)
-            tmp3 = np.sum(diff[:,0] * diff[:,2], axis=0)
-            tmp4 = np.sum(diff[:,1] * diff[:,2], axis=0)
+            tmp2 = np.sum(diff[:, 0] * diff[:, 1], axis=0)
+            tmp3 = np.sum(diff[:, 0] * diff[:, 2], axis=0)
+            tmp4 = np.sum(diff[:, 1] * diff[:, 2], axis=0)
 
-            S = 1 / sel.n_atoms * np.array([[tmp1[0], tmp2,    tmp3],
-                                            [tmp2,    tmp1[1], tmp4],
-                                            [tmp3,    tmp4,    tmp1[2]]])
-            
+            S = (
+                1
+                / sel.n_atoms
+                * np.array(
+                    [
+                        [tmp1[0], tmp2, tmp3],
+                        [tmp2, tmp1[1], tmp4],
+                        [tmp3, tmp4, tmp1[2]],
+                    ]
+                )
+            )
+
             w, _ = LA.eig(S)
             W.append(np.sort(w)[::-1])
 
-        with open(outfile, 'w') as f:
-            f.write('# lambda1 lambda2 lambda3 Rg kappa^2 b\n')
-            f.write('# diag(lambda1, lambda2, lambda3) = eigenvalue(S)\n')
-            f.write('# lambda1 + lambda2 + lambda3 = Rg^2\n')
-            f.write('# kappa^2 = 1 - 3(l1l2 + l2l3 + l3l1)/(l1 + l2 + l3)^2\n')
-            f.write('# b = lmabda1 - 0.5(lambda2 + lambda3)\n')
-            f.write(time + '\n')
-        
+        with open(outfile, "w") as f:
+            f.write("# lambda1 lambda2 lambda3 Rg kappa^2 b\n")
+            f.write("# diag(lambda1, lambda2, lambda3) = eigenvalue(S)\n")
+            f.write("# lambda1 + lambda2 + lambda3 = Rg^2\n")
+            f.write("# kappa^2 = 1 - 3(l1l2 + l2l3 + l3l1)/(l1 + l2 + l3)^2\n")
+            f.write("# b = lmabda1 - 0.5(lambda2 + lambda3)\n")
+            f.write(time + "\n")
+
             W = np.array(W)
 
             for w in W:
                 Rg = np.sqrt(np.sum(w))
-                kappa2 = 1 - 3 *(w[0] * w[1] + w[1] * w[2] + w[2] * w[0]) / \
-                         (np.sum(w)) ** 2
-                b = b = w[0] - 0.5 * (w[1]+w[2])
+                kappa2 = (
+                    1 - 3 * (w[0] * w[1] + w[1] * w[2] + w[2] * w[0]) / (np.sum(w)) ** 2
+                )
+                b = b = w[0] - 0.5 * (w[1] + w[2])
 
-                f.write('{} {} {} {} {} {}\n'.format(w[0], w[1], w[2], 
-                                                   Rg, kappa2, b))
+                f.write("{} {} {} {} {} {}\n".format(w[0], w[1], w[2], Rg, kappa2, b))
 
     def vmd_make_input(self):
 
-        with open('.mda/mda.tcl', 'w') as f:
+        with open(".mda/mda.tcl", "w") as f:
             if self.single is None:
 
-                topo, topo_t, traj, traj_t = \
-                self.inp['topo']['path'], self.inp['topo']['type'], \
-                self.inp['traj']['path'], self.inp['traj']['type']
+                topo, topo_t, traj, traj_t = (
+                    self.inp["topo"]["path"],
+                    self.inp["topo"]["type"],
+                    self.inp["traj"]["path"],
+                    self.inp["traj"]["type"],
+                )
 
                 f.write(self.vmd_load(topo, topo_t, traj, traj_t))
-            
+
             else:
                 f.write(self.vmd_load_single(self.single))
 
-            
             for k, v in self.vmd.items():
                 calculation = getattr(self, k)
                 for j in v:
-                    f.write(calculation(**self.inp['measure'][j]))
+                    f.write(calculation(**self.inp["measure"][j]))
 
     def outfile_and_time(self, func, sel):
         """Get output file name and time
@@ -447,34 +477,34 @@ class Measure:
             string -- outfile and time
         """
 
-        outfile = self.outfile + '_' + func.__name__ + '_' + \
-                    '-'.join(sel.split()) + '.dat'
+        outfile = (
+            self.outfile + "_" + func.__name__ + "_" + "-".join(sel.split()) + ".dat"
+        )
         time = datetime.now().strftime("# %m/%d/%Y, %H:%M:%S")
-        
+
         return outfile, time
 
     def run(self):
-        
+
         # make dir for mda files
-        os.system('mkdir -p .mda')
+        os.system("mkdir -p .mda")
 
         if self.vmd:
             self.vmd_make_input()
-            #os.system('vmd -dispdev text < .mda/mda.tcl > .mda/vmd.log')
-            os.system('vmd -dispdev text < .mda/mda.tcl')
-        
+            # os.system('vmd -dispdev text < .mda/mda.tcl > .mda/vmd.log')
+            os.system("vmd -dispdev text < .mda/mda.tcl")
+
         if self.cpptraj:
-            os.system('cpptraj < .mda/mda.cpptraj | tee .mda/cpptraj.log')
-        
+            os.system("cpptraj < .mda/mda.cpptraj | tee .mda/cpptraj.log")
+
         if self.other:
             if self.single:
                 self.load_single(self.single)
             else:
-                self.load(self.inp['topo']['path'], 
-                          self.inp['traj']['path'])
+                self.load(self.inp["topo"]["path"], self.inp["traj"]["path"])
 
             # run calculations
             for k, v in self.other.items():
                 calculation = getattr(self, k)
                 for j in v:
-                    calculation(**self.inp['measure'][j])
+                    calculation(**self.inp["measure"][j])

@@ -9,14 +9,16 @@ from mda.analysis import Measure
 
 
 def mda():
-    parser = argparse.ArgumentParser(description='MDA: Analysis Tools for MD Simulations')
-    parser.add_argument('input', type=str, help='input file of MDA')
+    parser = argparse.ArgumentParser(
+        description="MDA: Analysis Tools for MD Simulations"
+    )
+    parser.add_argument("input", type=str, help="input file of MDA")
     args = parser.parse_args()
 
     # TODO:
     sys.stdout = Logger()
     start = util.output_welcome()
- 
+
     paper = Paper(args.input)
 
     if not paper.flag:
@@ -26,5 +28,6 @@ def mda():
 
     util.output_end(start)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     mda()
