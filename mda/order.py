@@ -21,11 +21,11 @@ class Order:
         self.Q = []
         self.S = []
 
-   
+  
     def run(self, oto=False, tto=False, avc=False):
-        
-        print('Calculating order parameters:')
-        
+      
+        print('Calculating order parameters ...')
+       
         progress = {'ncols': 80}
         for ts in tqdm(self.u.trajectory, **progress):
 
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     traj = '../examples/tip3p.ncdf'
     
     u = Universe(topo, traj)
-    sel = u.select_atoms('name O')
+    sel = 'name O'
 
     o = Order(u, sel)
     o.run()
