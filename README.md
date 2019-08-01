@@ -10,6 +10,8 @@
 ![python](https://img.shields.io/pypi/pyversions/mda.svg?style=flat-square&logo=python)
 ![license](https://img.shields.io/pypi/l/mda.svg?style=flat-square)
 
+<p align="center"><img src="https://app.pudu.io/data/uploads/mda.gif?raw=true"/></p>
+
 ## Installation
 
 Clone and install the latest version of  **MDA**:
