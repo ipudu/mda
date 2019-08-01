@@ -1,15 +1,21 @@
+import base64
 import re
 import sys
 import subprocess
 import requests
 
+from bs4 import BeautifulSoup as BSHTML
 from retrying import retry
+import tkinter as tk
 
 SCIHUB = "http://sci-hub.tw/"
 
 
 class Paper:
     def __init__(self, identifer):
+
+        # save captcha string
+        self.captcha = ''
 
         self.flag = True
 
@@ -22,18 +28,71 @@ class Paper:
     def fetch(self):
         URL = SCIHUB + self.identifer
         resp = requests.get(URL)
-        pdf_link = re.search(
+        link = re.search(
             "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+pdf",
             resp.text,
         )
-        if pdf_link:
-            self.download(pdf_link.group(0))
+        if link:
+            pdf_link = link.group(0)
         else:
-            pdf_link = re.search(
+            link = re.search(
                 "//(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+pdf",
                 resp.text,
             )
-            self.download("http:" + pdf_link.group(0))
+            pdf_link = "http:" + link.group(0)
+
+        self.process(pdf_link)
+
+    def process(self, url):
+        while True:
+            resp = requests.get(url)
+            if "text/html" in resp.headers["content-type"]:
+                html = r.text
+            else:
+                self.download(url)
+                return
+
+            # get image url
+            soup = BSHTML(html)
+            image = soup.findAll("img")
+            image_url = resp.cookies.list_domains()[0] + image[0]["src"]
+
+            self.gui(image_url)
+
+            payload = {"name": self.captcha}
+
+            r = requests.post(url, params=payload)
+
+    def gui(self, url):
+        resp = requests.get(url)
+        b64_data = base64.encodebytes(resp.content)
+
+        def getText():
+            # You can perform check on some condition if you want to
+            # If it is okay, then store the value, and exist
+            self.captcha = inputBox.get()
+            print("User entered captcha: ", self.captcha)
+            root.destroy()
+
+        root = tk.Tk()
+        simpleTitle = tk.Label(root)
+        simpleTitle["text"] = "CAPTCHA"
+        simpleTitle.pack()
+
+        # The image (but in the label widget)
+        image = tk.PhotoImage(data=b64_data)
+        imageLabel = tk.Label(image=image)
+        imageLabel.pack()
+
+        # The entry box widget
+        inputBox = tk.Entry(root)
+        inputBox.pack()
+
+        # The button widget
+        button = tk.Button(root, text="Submit", command=getText)
+        button.pack()
+
+        tk.mainloop()
 
     @retry(wait_random_min=100, wait_random_max=1000, stop_max_attempt_number=10)
     def download(self, link):

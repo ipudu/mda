@@ -1,6 +1,8 @@
+beautifulsoup4
 mdanalysis
 numpy
 numba
 pyyaml
 retrying
+tkinter
 tqdm
