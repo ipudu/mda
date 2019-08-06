@@ -5,6 +5,8 @@ import subprocess
 import requests
 
 from bs4 import BeautifulSoup as BSHTML
+from io import BytesIO
+from PIL import Image
 from retrying import retry
 import tkinter as tk
 
@@ -15,7 +17,7 @@ class Paper:
     def __init__(self, identifer):
 
         # save captcha string
-        self.captcha = ''
+        self.captcha = ""
 
         self.flag = True
 
@@ -47,25 +49,30 @@ class Paper:
         while True:
             resp = requests.get(url)
             if "text/html" in resp.headers["content-type"]:
-                html = r.text
+                html = resp.text
+                print(html)
             else:
                 self.download(url)
                 return
 
             # get image url
-            soup = BSHTML(html)
+            soup = BSHTML(html, "html.parser")
             image = soup.findAll("img")
             image_url = resp.cookies.list_domains()[0] + image[0]["src"]
 
             self.gui(image_url)
+            os.remove("captcha.png")
 
-            payload = {"name": self.captcha}
+            payload = {"answer": self.captcha}
 
             r = requests.post(url, params=payload)
 
     def gui(self, url):
+        if not url.startswith("http://"):
+            url = "http://" + url
         resp = requests.get(url)
-        b64_data = base64.encodebytes(resp.content)
+        img = Image.open(BytesIO(resp.content))
+        img.save("captcha.png")
 
         def getText():
             # You can perform check on some condition if you want to
@@ -80,8 +87,8 @@ class Paper:
         simpleTitle.pack()
 
         # The image (but in the label widget)
-        image = tk.PhotoImage(data=b64_data)
-        imageLabel = tk.Label(image=image)
+        img = tk.PhotoImage(file="captcha.png")
+        imageLabel = tk.Label(image=img)
         imageLabel.pack()
 
         # The entry box widget
