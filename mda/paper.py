@@ -1,8 +1,10 @@
 import base64
+import os
 import re
 import sys
 import subprocess
 import requests
+import webbrowser
 
 from bs4 import BeautifulSoup as BSHTML
 from io import BytesIO
@@ -46,26 +48,34 @@ class Paper:
         self.process(pdf_link)
 
     def process(self, url):
-        while True:
-            resp = requests.get(url)
-            if "text/html" in resp.headers["content-type"]:
-                html = resp.text
-                print(html)
-            else:
-                self.download(url)
-                return
+        resp = requests.get(url)
+
+        if "text/html" in resp.headers["content-type"]:
+            print("Open paper link in browser ....")
+            webbrowser.open_new(url)
+
+        else:
+            self.download(url)
+
+            """
 
             # get image url
             soup = BSHTML(html, "html.parser")
             image = soup.findAll("img")
+            param = soup.findAll("input")
             image_url = resp.cookies.list_domains()[0] + image[0]["src"]
 
             self.gui(image_url)
             os.remove("captcha.png")
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36",
+                "Cookie": "session=a9175edb5753ce5cb573c2d5245b94cf; _ym_uid=1561652450305069371; _ym_d=1561652450; refresh=1564601866.7002; __ddg_=E52E1D03E929E72089E22819E7BE958ACC0378CC",
+            }
+            payload = {"id": param[0]["value"], "answer": self.captcha}
 
-            payload = {"answer": self.captcha}
+            r = requests.post(url, params=payload, headers=headers)
 
-            r = requests.post(url, params=payload)
+            """
 
     def gui(self, url):
         if not url.startswith("http://"):
