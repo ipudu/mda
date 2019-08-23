@@ -7,6 +7,7 @@ import requests
 import webbrowser
 
 from bs4 import BeautifulSoup as BSHTML
+from colorama import Back, Style
 from io import BytesIO
 from PIL import Image
 from retrying import retry
@@ -115,6 +116,8 @@ class Paper:
     def download(self, link):
         print("Downloading paper...")
         subprocess.run(["curl", "-O", link])
+        pdf_name = link.split('/')[-1]
+        print('\n\nPaper saved as: ' + Back.GREEN + pdf_name + Style.RESET_ALL)
 
     def paper_check(self, identifer):
 
