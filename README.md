@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/ipudu/mda">
-    <img alt="mda: Analysis tools for MD simulations" src="https://app.pudu.io/data/uploads/mda.png" width="50%" height="50%">
+    <img alt="mda: Analysis tools for MD simulations" src="./mda.png" width="50%" height="50%">
   </a>
 </p>
 
@@ -10,11 +10,9 @@
 ![python](https://img.shields.io/pypi/pyversions/mda.svg?style=flat-square&logo=python)
 ![license](https://img.shields.io/pypi/l/mda.svg?style=flat-square)
 
-<p align="center"><img src="https://app.pudu.io/data/uploads/mda.gif?raw=true"/></p>
-
 ## Installation
 
-Clone and install the latest version of  **MDA**:
+Clone and install the latest version of **MDA**:
 
 ```bash
 git clone https://github.com/ipudu/mda
