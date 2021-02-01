@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mda",
-    version="0.0.1",
+    version="0.0.3",
     author="Pu Du",
     author_email="pudugg@gmail.com",
-    description="A small package",
+    description="Analysis Tools for MD Simulations",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com",
+    url="https://github.com/ipudu/mda",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
